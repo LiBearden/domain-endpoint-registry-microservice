@@ -1,12 +1,14 @@
 # Import the Flask framework
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
+from datetime import datetime
 import os
 import markdown
 
 # Create an instance of Flask
 app = Flask(__name__)
-cluster = MongoClient("mongodb+srv://dbAdmin:<password>@endpoint-generator-db.uyveq.gcp.mongodb.net/domain-data?retryWrites=true&w=majority")
+app.config['JSON_SORT_KEYS'] = False
+cluster = MongoClient("mongodb+srv://dbAdmin:bG04PczLSqI7HX7b@endpoint-generator-db.uyveq.gcp.mongodb.net/domain-data?retryWrites=true&w=majority")
 db = cluster["domain-data"]
 collection = db["domains"]
 
@@ -29,5 +31,28 @@ def get_all_domains():
     for domain in domains:
         results.append({"name": domain["name"], "added-date": domain["added-date"], "events": domain["events"]})
     return jsonify({"items": results})
+
+
+@app.route('/domains/<name>', methods=['GET'])
+def get_one_domain(name):
+    domain = collection.find_one_or_404({"name": name})
+    result = {"items": {"name": domain["name"], "added-date": domain["added-date"], "events": domain["events"]}}
+    return jsonify(result)
+
+
+@app.route('/domains', methods=['POST'])
+def add_domain():
+    domains = collection
+    name = request.json["name"]
+    events = request.json["events"]
+    post = {"name": name, "events": events, "added-date": str(datetime.utcnow())}
+    domain_id = domains.insert_one(post).inserted_id
+    new_domain = domains.find_one({"_id": domain_id})
+    results = {
+        "name": new_domain["name"],
+        "added-date": new_domain["added-date"],
+        "events": new_domain["events"]
+    }
+    return {"items": results}
 
 
