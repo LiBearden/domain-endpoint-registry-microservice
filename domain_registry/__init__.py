@@ -8,7 +8,7 @@ import markdown
 # Create an instance of Flask
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
-cluster = MongoClient("mongodb+srv://dbAdmin:bG04PczLSqI7HX7b@endpoint-generator-db.uyveq.gcp.mongodb.net/domain-data?retryWrites=true&w=majority")
+cluster = MongoClient("mongodb+srv://domainRegistry:LBLrWRelu8AKelBw@endpoint-generator-db.vmequ.gcp.mongodb.net/domain-data?retryWrites=true&w=majority")
 db = cluster["domain-data"]
 collection = db["domains"]
 
@@ -29,15 +29,8 @@ def get_all_domains():
     domains = collection.find()
     results = []
     for domain in domains:
-        results.append({"name": domain["name"], "added-date": domain["added-date"], "events": domain["events"]})
+        results.append({"name": domain["name"], "added-date": datetime.fromisoformat(str(domain["added-date"])), "events": domain["events"]})
     return jsonify({"items": results})
-
-
-@app.route('/domains/<name>', methods=['GET'])
-def get_one_domain(name):
-    domain = collection.find_one_or_404({"name": name})
-    result = {"items": {"name": domain["name"], "added-date": domain["added-date"], "events": domain["events"]}}
-    return jsonify(result)
 
 
 @app.route('/domains', methods=['POST'])
@@ -54,5 +47,27 @@ def add_domain():
         "events": new_domain["events"]
     }
     return {"items": results}
+
+
+@app.route('/domains/<name>', methods=['GET'])
+def get_one_domain(name):
+    domains = collection
+    domain = domains.find_one({"name": name})
+    result = {"items": {"name": domain["name"], "added-date": domain["added-date"], "events": domain["events"]}}
+    return jsonify(result)
+
+
+@app.route('/domains/<name>', methods=['DELETE'])
+def delete_domain(name):
+    domains = collection
+    domain = domains.find_one({"name": name})
+    deleted_domain = domains.delete_one(domain)
+    results = {
+                "name": domain["name"],
+                }
+    return {"deleted_items": results, "message": "Domain deleted successfully."}
+
+
+
 
 

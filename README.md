@@ -33,19 +33,39 @@ def get_domains():
 **Response**
 
 - `200 - OK` upon successful retrieval of all domains
+
 ```json
-{ "items": [
-   {
-      "name": "ellio.tech",
-      "added-date": 1548799027,
-      "events": ["delivered", "rejected", "failed"]
+{
+  "items": [
+    {
+      "name": "gyozamail.dev",
+      "added-date": "Sun, 30 Aug 2020 18:22:33 GMT",
+      "events": [
+        "accepted",
+        "rejected",
+        "opened"
+      ]
     },
     {
-    "name": "realgengarhours.com",
-    "added-date": 1548799027,
-    "events": ["rejected", "failed", "stored"]
+      "name": "realgengarhours.com",
+      "added-date": "Sun, 30 Aug 2020 18:23:08 GMT",
+      "events": [
+        "rejected",
+        "failed",
+        "stored"
+      ]
+    },
+    {
+      "name": "ellio.tech",
+      "added-date": "Sun, 30 Aug 2020 18:24:00 GMT",
+      "events": [
+        "delivered",
+        "rejected",
+        "failed"
+      ]
     }
-]}
+  ]
+}
 ```
 
 ### Adding a new domain
@@ -76,11 +96,16 @@ def add_domain():
 **Response**
 
 - `201 - Created` on successful addition of domain
+
 ```json
 {
-    "name": "gyozamail.dev",
-    "added-date": 1598738289,
-    "events": ["accepted", "rejected", "opened"]
+      "name": "gyozamail.dev",
+      "added-date": "Sun, 30 Aug 2020 18:22:33 GMT",
+      "events": [
+        "accepted",
+        "rejected",
+        "opened"
+      ]
 }
 ```
 
@@ -107,9 +132,13 @@ def get_domain():
 
 ```json
 {
-    "name": "gyozamail.dev",
-    "added-date": 1598738289,
-    "events": ["accepted", "rejected", "opened"]
+      "name": "gyozamail.dev",
+      "added-date": "Sun, 30 Aug 2020 18:22:33 GMT",
+      "events": [
+        "accepted",
+        "rejected",
+        "opened"
+      ]
 }
 ```
 
@@ -136,9 +165,10 @@ def delete_domain():
 
 ```json
 {
-    "name": "gyozamail.dev",
-    "added-date": 1598738289,
-    "events": ["accepted", "rejected", "opened"]
+  "deleted_items": {
+    "name": "deletethis.dev"
+  },
+  "message": "Domain deleted successfully."
 }
 ```
 
