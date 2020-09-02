@@ -1,18 +1,21 @@
-# Import the Flask framework
+# Import necessary packages
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from datetime import datetime
 import os
 import markdown
 
-# Create an instance of Flask
+# Create an instance of Flask and prevent it from sorting JSON attributes
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
+
+# Initialize MongoDB Atlas for database operations
 cluster = MongoClient("mongodb+srv://domainRegistry:LBLrWRelu8AKelBw@endpoint-generator-db.vmequ.gcp.mongodb.net/domain-data?retryWrites=true&w=majority")
 db = cluster["domain-data"]
 collection = db["domains"]
 
 
+# Initialize the root route and expose endpoint to GET for documentation reference
 @app.route('/', methods=['GET'])
 def index():
     """Present the documentation from the README.md file."""
@@ -24,6 +27,7 @@ def index():
         return markdown.markdown(content)
 
 
+# Initialize "/domains" endpoint, allow GET method to retrieve a list of all domains
 @app.route('/domains', methods=['GET'])
 def get_all_domains():
     domains = collection.find()
@@ -32,6 +36,8 @@ def get_all_domains():
         results.append({"name": domain["name"], "added-date": datetime.fromisoformat(str(domain["added-date"])), "events": domain["events"]})
     return jsonify({"items": results})
 
+
+# Initialize "/domains" endpoint, allow POST method to add new domains
 
 @app.route('/domains', methods=['POST'])
 def add_domain():
@@ -49,6 +55,7 @@ def add_domain():
     return {"items": results}
 
 
+# Initialize custom domain name endpoint with the GET method to retrieve a single domain
 @app.route('/domains/<name>', methods=['GET'])
 def get_one_domain(name):
     domains = collection
@@ -57,6 +64,7 @@ def get_one_domain(name):
     return jsonify(result)
 
 
+# Initialize custom domain name endpoint with the DELETE method to delete a single domain
 @app.route('/domains/<name>', methods=['DELETE'])
 def delete_domain(name):
     domains = collection
