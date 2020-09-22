@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
 # Initialize MongoDB Atlas for database operations
-cluster = MongoClient("mongodb+srv://domainRegistry:LBLrWRelu8AKelBw@endpoint-generator-db.vmequ.gcp.mongodb.net/domain-data?retryWrites=true&w=majority")
+cluster = MongoClient("mongodb+srv://MONGO_SRV_URI")
 db = cluster["domain-data"]
 collection = db["domains"]
 
